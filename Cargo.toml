@@ -1,0 +1,22 @@
+[package]
+name = "dnaaprfr-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# reddit api to get streams of new data
+roux-stream = "^0"
+# reddit api
+roux = "^1"
+# gui
+eframe = "^0"
+# get .cache/appdata
+platform-dirs = "^0"
+# save state
+serde = { version = "^1", features = ["derive"] }
+# file dialoge
+rfd = "^0"
+# error, nice
+thiserror = "^1"
+# config files
+serde_yaml = "^0"
