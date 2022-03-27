@@ -11,7 +11,7 @@ roux = "^1"
 # gui
 eframe = "^0"
 # get .cache/appdata
-platform-dirs = "^0"
+directories = "^4"
 # save state
 serde = { version = "^1", features = ["derive"] }
 # file dialoge

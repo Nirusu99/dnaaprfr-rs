@@ -11,7 +11,7 @@ pub enum DnrError {
     #[error("failed to serialize")]
     SerializeError(#[from] serde_yaml::Error),
     #[error("failed to lock config file for write")]
-    WriteError(#[from] std::sync::PoisonError<std::sync::RwLockWriteGuard<'_, std::fs::File>>),
+    WriteError,
     #[error("unknown error occured: `{0}`")]
     Unknown(&'static str),
 }

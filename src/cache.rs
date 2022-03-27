@@ -1,12 +1,10 @@
-use std::fs::File;
 use std::sync::RwLock;
+use std::{fs::File, io::Write};
 
 use roux::Subreddit as RouxSub;
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-use crate::error::DnrError;
-use crate::error::Result;
+use crate::error::{DnrError, Result};
 
 pub const CACHE_DIR_NAME: &str = "dnaaprfr";
 pub const FAILED_TO_GET_CACHE_DIR: &str = "couldn't get cache directory";
@@ -56,22 +54,36 @@ impl Config {
 
     pub fn add_subreddit(&mut self, sub: &RouxSub) -> Result<()> {
         let subreddit = sub.into();
-        let serialized = serde_yaml::to_vec(&subreddit)?;
+        let serialized = serde_yaml::to_string(&subreddit)?;
         self.subreddits.push(subreddit);
-        let file = self.file.write()?;
+        let mut file = match self.file.write() {
+            Ok(file) => file,
+            Err(_) => return Err(DnrError::WriteError),
+        };
+
+        file.write_all(&serialized.as_bytes())?;
 
         Ok(())
     }
 }
 
 pub fn config() -> File {
-    let app_dirs = platform_dirs::AppDirs::new(Some(CACHE_DIR_NAME), false)
-        .expect("couldn't get app directories");
-    let path = app_dirs.cache_dir.join(CONFIG_NAME);
+    let app_dirs = directories::BaseDirs::new().expect("couldn't get app directories");
+    let path = app_dirs.cache_dir().join(CACHE_DIR_NAME).join(CONFIG_NAME);
 
-    if let Err(why) = std::fs::create_dir_all(&app_dirs.cache_dir) {
+    if let Err(why) = std::fs::create_dir_all(&app_dirs.cache_dir().join(CACHE_DIR_NAME)) {
         panic!("couldn't create cache directory: {:?}", why)
     }
 
-    std::fs::File::create(&path).expect("Couldn't open config file")
+    std::fs::File::create(&path).expect("couldn't open config file")
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::error::Result;
+
+    #[test]
+    fn test_serialize() -> Result<()> {
+        Ok(())
+    }
 }
